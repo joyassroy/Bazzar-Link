@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'orders_screen.dart'; // 🟢 Track Order-এর জন্য ইম্পোর্ট
+import '../auth_wrapper.dart'; // 🟢 Home Page-এ ফেরার জন্য ইম্পোর্ট (ফোল্ডার পাথ ঠিক করে নিও)
 
 class OrderSuccessScreen extends StatelessWidget {
   const OrderSuccessScreen({super.key});
@@ -25,7 +27,7 @@ class OrderSuccessScreen extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 Container(width: 180, height: 180, decoration: BoxDecoration(color: const Color(0xFF53B175).withOpacity(0.1), shape: BoxShape.circle)),
-                const Icon(Icons.check_circle, color: Color(0xFF53B175), size: 120),
+                const Icon(Icons.check_circle, color: const Color(0xFF53B175), size: 120),
               ],
             ),
             const SizedBox(height: 40),
@@ -44,13 +46,30 @@ class OrderSuccessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF53B175), minimumSize: const Size(double.infinity, 65), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-                    onPressed: () { /* Track Order Page */ },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF53B175),
+                        minimumSize: const Size(double.infinity, 65),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                    ),
+                    onPressed: () {
+                      // 🚀 🟢 Track Order লজিক
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const OrdersScreen()),
+                      );
+                    },
                     child: const Text("Track Order", style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 10),
                   TextButton(
-                    onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false),
+                    onPressed: () {
+                      // 🏠 🟢 Back to Home লজিক
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AuthWrapper()),
+                            (route) => false,
+                      );
+                    },
                     child: const Text("Back to home", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                 ],

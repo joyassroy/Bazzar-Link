@@ -3,46 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
-import 'my_details_screen.dart'; // 🟢 My Details ইম্পোর্ট করা হলো
+
+// 🟢 সবগুলো সাব-পেজ ইম্পোর্ট করা হলো
+import 'my_details_screen.dart';
+import 'orders_screen.dart';
+import 'address_screen.dart';
+import 'payment_methods_screen.dart';
+import 'help_screen.dart';
+import 'about_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
 
   final User? user = FirebaseAuth.instance.currentUser;
   final AuthService _authService = AuthService();
-
-  // --- 🟢 TEMP FUNCTION: মেগা ডেটা পুশ ---
-  Future<void> _pushFinalMegaDemoData(BuildContext context) async {
-    // (এই ফাংশনের কোড আগের মতোই আছে, আমি আর এখানে বিশাল লিস্টটা লিখলাম না যাতে তোমার কপি করতে সুবিধা হয়।
-    // তোমার আগের কোডের এই ফাংশনের ভেতরের ডেটাগুলোই থাকবে। চাইলে তুমি আগেরটা রেখে শুধু বিল্ড মেথডটা আপডেট করতে পারো,
-    // তবে কপি-পেস্টের সুবিধার্থে আমি পুরোটা দিয়ে দিচ্ছি ডামি ডেটাসহ।)
-    try {
-      final db = FirebaseFirestore.instance;
-      List<Map<String, dynamic>> categories = [
-        {'id': 'c1', 'name': 'Fresh Fruits & Vegetable', 'imageUrl': 'https://cdn-icons-png.flaticon.com/512/2329/2329865.png'},
-        {'id': 'c2', 'name': 'Cooking Oil & Ghee', 'imageUrl': 'https://cdn-icons-png.flaticon.com/512/5346/5346124.png'},
-      ];
-      List<Map<String, dynamic>> allProducts = [
-        {'catId': 'c1', 'name': 'Bananas', 'unit': '7pcs', 'price': 80, 'img': 'https://images.unsplash.com/photo-1571771894821-ad9b58a32947?w=500'},
-      ];
-
-      for (var cat in categories) await db.collection('categories').doc(cat['id']).set(cat);
-      for (int i = 0; i < allProducts.length; i++) {
-        var prod = allProducts[i];
-        await db.collection('products').doc("${prod['catId']}_prod_$i").set({
-          'id': "${prod['catId']}_prod_$i",
-          'categoryId': prod['catId'],
-          'name': prod['name'],
-          'price': prod['price'],
-          'unit': prod['unit'],
-          'imageUrl': prod['img'],
-        });
-      }
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Data Uploaded!'), backgroundColor: Colors.green));
-    } catch (e) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('❌ Error: $e'), backgroundColor: Colors.red));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +35,10 @@ class ProfileScreen extends StatelessWidget {
             StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots(),
                 builder: (context, snapshot) {
-                  // ডিফল্ট ডেটা (যদি ডাটাবেসে কিছু না থাকে)
                   String displayName = user?.displayName ?? 'Valued Customer';
                   String email = user?.email ?? 'No email linked';
                   String? photoUrl = user?.photoURL;
 
-                  // যদি ডাটাবেসে নাম থাকে, তবে সেটা দেখাবে
                   if (snapshot.hasData && snapshot.data!.exists) {
                     var data = snapshot.data!.data() as Map<String, dynamic>;
                     displayName = data['username'] ?? displayName;
@@ -91,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                        displayName, // 🟢 এখন রিয়েল-টাইম নাম দেখাবে
+                                        displayName,
                                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                         overflow: TextOverflow.ellipsis
                                     ),
@@ -117,19 +89,19 @@ class ProfileScreen extends StatelessWidget {
             ),
             const Divider(thickness: 1, color: Colors.black12),
 
-            // --- Options ---
+            // --- 🚀 ডাইনামিক মেনু অপশনগুলো ---
             _buildProfileOption(Icons.shopping_bag_outlined, 'Orders', context),
             _buildProfileOption(Icons.person_outline, 'My Details', context),
             _buildProfileOption(Icons.location_on_outlined, 'Delivery Address', context),
             _buildProfileOption(Icons.payment_outlined, 'Payment Methods', context),
-            _buildProfileOption(Icons.local_offer_outlined, 'Promo Cord', context),
+            _buildProfileOption(Icons.local_offer_outlined, 'Promo Code', context),
             _buildProfileOption(Icons.notifications_none, 'Notifications', context),
             _buildProfileOption(Icons.help_outline, 'Help', context),
             _buildProfileOption(Icons.info_outline, 'About', context),
 
             const SizedBox(height: 30),
 
-            // --- Log Out Button ---
+            // --- Log Out Button (আগের সিকিউর লজিক) ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SizedBox(
@@ -150,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // --- Reusable Option ---
+  // --- 🚀 Reusable Option (Master Navigation) ---
   Widget _buildProfileOption(IconData icon, String title, BuildContext context) {
     return Column(
       children: [
@@ -159,16 +131,35 @@ class ProfileScreen extends StatelessWidget {
           title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black87),
           onTap: () {
-            if (title == 'My Details') {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const MyDetailsScreen()));
-            } else if (title == 'Orders') {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Orders page coming soon!')));
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$title page coming soon!')));
+            // 🎯 সেন্ট্রাল নেভিগেশন লজিক
+            switch (title) {
+              case 'My Details':
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const MyDetailsScreen()));
+                break;
+              case 'Orders':
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const OrdersScreen()));
+                break;
+              case 'Delivery Address':
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddressScreen()));
+                break;
+              case 'Payment Methods':
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const PaymentMethodsScreen()));
+                break;
+              case 'Help':
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpScreen()));
+                break;
+              case 'About':
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
+                break;
+              default:
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$title page coming soon!')));
             }
           },
         ),
-        const Padding(padding: EdgeInsets.symmetric(horizontal: 20.0), child: Divider(thickness: 1, color: Colors.black12, height: 1)),
+        const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
+            child: Divider(thickness: 1, color: Colors.black12, height: 1)
+        ),
       ],
     );
   }
@@ -182,14 +173,22 @@ class ProfileScreen extends StatelessWidget {
         content: const Text('Are you sure you want to log out from BazzarLink?'),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel', style: TextStyle(color: Colors.grey))),
+          TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey))
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF53B175)),
             onPressed: () async {
-              Navigator.pop(dialogContext);
-              await _authService.signOut();
+              Navigator.pop(dialogContext); // প্রথমে ডায়ালগ বন্ধ করবে
+              await _authService.signOut(); // এরপর ফায়ারবেস থেকে লগআউট করবে
+
               if (context.mounted) {
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      (route) => false,
+                );
               }
             },
             child: const Text('Log Out', style: TextStyle(color: Colors.white)),
