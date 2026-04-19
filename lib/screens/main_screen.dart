@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart'; // হোম স্ক্রিন
 import 'explore_screen.dart'; // এক্সপ্লোর স্ক্রিন
 import 'cart_screen.dart'; // কার্ট স্ক্রিন
-import 'favourite_screen.dart'; // 🟢 আমাদের নতুন ফেভারিট স্ক্রিন ইম্পোর্ট করা হলো
+import 'favourite_screen.dart';
 import 'profile_screen.dart'; // প্রোফাইল স্ক্রিন
 
 class MainScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),      // Index 0: Shop
     const ExploreScreen(),   // Index 1: Explore
     const CartScreen(),      // Index 2: Cart
-    const FavouriteScreen(), // 🟢 Index 3: Favourite স্ক্রিনটি বসানো হলো
+    const FavouriteScreen(),
     ProfileScreen(),         // Index 4: Account
   ];
 

@@ -102,7 +102,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
 
-                      // 💖 রিয়েল-টাইম ফেভারিট বাটন
+                      // 💖 testingggg
                       if (user != null)
                         StreamBuilder<DocumentSnapshot>(
                           stream: FirebaseFirestore.instance

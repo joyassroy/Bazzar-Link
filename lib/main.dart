@@ -7,7 +7,7 @@ import 'screens/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔑 তোমার Stripe Publishable Key এখানে বসাও (Stripe Dashboard থেকে পাবে)
+
   Stripe.publishableKey = "pk_test_51SfC4vHIEGoE5ijPQuY7T3iN4fV2e3kepSSN0qoB7e804Jzlyp6IXyVdGzmAoo0Dt1s4yOOcKZhfgAdHo7v54tyu000UWB6t0D";
   await Stripe.instance.applySettings();
 
